@@ -6,24 +6,19 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 /**
- * @Description:
- * @Date:2020/9/6
+ * @Description: 店铺信息
+ * @Date:2020/9/13
  * @User:morgan.b.chen
  */
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class ProductInfo {
+public class ShopInfo {
 
     private Long id;
     private String name;
-    private Double price;
-    private String pictureList;
-    private String specification;
-    private String service;
-    private String color;
-    private String size;
-    private Long shopId;
+    private Integer level;
+    private Double goodCommentRate;
 
     @Override
     public String toString() {

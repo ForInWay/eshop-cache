@@ -63,6 +63,7 @@ public class KafkaConsumer {
         // 第一步：保存到本地缓存
         cacheService.saveProductInfoLocalCache(productInfo);
         System.out.println("获取刚刚保存到本地缓存的商品信息：" + cacheService.getProductInfoLocalCache(productId));
+        // TODO 分布式缓存重建，防止并发冲突问题，业务逻辑
         // 第二步：保存到redis缓存
         cacheService.saveProductInfoRedisCache(productInfo);
     }

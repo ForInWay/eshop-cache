@@ -4,7 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.morgan.eshop.cache.entity.ProductInfo;
 import com.morgan.eshop.cache.entity.RequestTest;
 import com.morgan.eshop.cache.entity.ShopInfo;
-import com.morgan.eshop.cache.kafka.KafkaProducer;
+import com.morgan.eshop.cache.base.kafka.KafkaProducer;
 import com.morgan.eshop.cache.service.CacheService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;

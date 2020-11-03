@@ -1,4 +1,4 @@
-package com.morgan.eshop.cache.context;
+package com.morgan.eshop.cache.base.context;
 
 import org.springframework.context.ApplicationContext;
 

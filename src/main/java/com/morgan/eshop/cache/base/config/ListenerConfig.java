@@ -1,6 +1,6 @@
-package com.morgan.eshop.cache.config;
+package com.morgan.eshop.cache.base.config;
 
-import com.morgan.eshop.cache.listener.InitListener;
+import com.morgan.eshop.cache.base.listener.InitListener;
 import org.springframework.boot.web.servlet.ServletListenerRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

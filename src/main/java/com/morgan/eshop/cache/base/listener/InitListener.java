@@ -1,6 +1,6 @@
-package com.morgan.eshop.cache.listener;
+package com.morgan.eshop.cache.base.listener;
 
-import com.morgan.eshop.cache.context.SpringContext;
+import com.morgan.eshop.cache.base.context.SpringContext;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 

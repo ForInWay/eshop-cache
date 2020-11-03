@@ -1,4 +1,4 @@
-package com.morgan.eshop.cache.config;
+package com.morgan.eshop.cache.base.config;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.PropertyAccessor;

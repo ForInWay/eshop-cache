@@ -1,6 +1,5 @@
-package com.morgan.eshop.cache.kafka;
+package com.morgan.eshop.cache.base.kafka;
 
-import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.morgan.eshop.cache.entity.ProductInfo;
 import com.morgan.eshop.cache.entity.ShopInfo;

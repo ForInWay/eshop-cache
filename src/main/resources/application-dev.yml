@@ -84,3 +84,6 @@ logging:
     com.morgan: debug
 server:
   port: 8081
+zookeeper:
+  connectString: 172.16.165.135:2181,172.16.165.134:2181,172.16.165.133:2181
+

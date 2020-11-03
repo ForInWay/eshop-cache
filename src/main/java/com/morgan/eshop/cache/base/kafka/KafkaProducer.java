@@ -1,4 +1,4 @@
-package com.morgan.eshop.cache.kafka;
+package com.morgan.eshop.cache.base.kafka;
 
 import com.alibaba.fastjson.JSON;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -1,6 +1,8 @@
 package com.morgan.eshop.cache.base.listener;
 
 import com.morgan.eshop.cache.base.context.SpringContext;
+import com.morgan.eshop.cache.base.thread.RebuildCacheThread;
+import com.morgan.eshop.cache.base.zookeeper.ZookeeperSession;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
@@ -21,6 +23,8 @@ public class InitListener implements ServletContextListener {
         WebApplicationContext webApplicationContext = WebApplicationContextUtils.getWebApplicationContext(servletContext);
         SpringContext.setApplicationContext(webApplicationContext);
 //        new Thread(new KafkaConsumer("cache-message")).start();
+        new Thread(new RebuildCacheThread()).start();
+        ZookeeperSession.init();
     }
 
     @Override

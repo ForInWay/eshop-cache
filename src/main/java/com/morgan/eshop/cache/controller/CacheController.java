@@ -1,6 +1,8 @@
 package com.morgan.eshop.cache.controller;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
+import com.morgan.eshop.cache.base.queue.RebuildCacheQueue;
 import com.morgan.eshop.cache.entity.ProductInfo;
 import com.morgan.eshop.cache.entity.RequestTest;
 import com.morgan.eshop.cache.entity.ShopInfo;
@@ -72,6 +74,13 @@ public class CacheController {
             log.info("从本地缓存中获取商品信息");
         }
         if (null == productInfo){
+            // 重建缓存
+            // 直接构造，模拟从数据库中拿取数据
+            String productInfoJSON = "{\"id\": 2, \"name\": \"iphone7手机\", \"price\": 5599, \"pictureList\":\"a.jpg,b.jpg\", \"specification\": \"iphone7的规格\", \"service\": \"iphone7的售后服务\", \"color\": \"红色,白色,黑色\", \"size\": \"5.5\", \"shopId\": 1, \"modifiedTime\": \"2017-01-01 12:00:00\"}";
+            productInfo = JSONObject.parseObject(productInfoJSON,ProductInfo.class);
+            // 将数据推送到一个内存队列
+            RebuildCacheQueue rebuildCacheQueue = RebuildCacheQueue.getInstance();
+            rebuildCacheQueue.putProductInfo(productInfo);
             log.info("缓存重建，从数据库加载");
         }
         return productInfo;

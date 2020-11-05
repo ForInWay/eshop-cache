@@ -24,4 +24,6 @@ public interface CacheService {
     void saveShopInfoRedisCache(ShopInfo shopInfo);
 
     ShopInfo getShopInfoLocalCache(Long shopId);
+
+    ProductInfo getProductInfoFromRedisCache(Long productId);
 }

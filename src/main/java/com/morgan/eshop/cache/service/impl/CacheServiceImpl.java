@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.morgan.eshop.cache.entity.ProductInfo;
 import com.morgan.eshop.cache.entity.ShopInfo;
 import com.morgan.eshop.cache.service.CacheService;
+import com.morgan.eshop.cache.utils.Tools;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
@@ -75,6 +76,21 @@ public class CacheServiceImpl implements CacheService{
     @Override
     @Cacheable(value = CACHE_NAME,key = "'shop_info_'+#shopId")
     public ShopInfo getShopInfoLocalCache(Long shopId) {
+        return null;
+    }
+
+    /**
+     * 从redis中获取商品信息
+     * @param productId
+     * @return
+     */
+    @Override
+    public ProductInfo getProductInfoFromRedisCache(Long productId) {
+        String productKey = "product_info_" + productId;
+        String productJson = (String)redisTemplate.opsForValue().get(productKey);
+        if (Tools.isNotEmpty(productJson)){
+            return JSONObject.parseObject(productJson,ProductInfo.class);
+        }
         return null;
     }
 }

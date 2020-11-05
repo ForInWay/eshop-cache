@@ -1,9 +1,12 @@
 package com.morgan.eshop.cache.base.kafka;
 
 import com.alibaba.fastjson.JSONObject;
+import com.morgan.eshop.cache.base.constant.GlobalConstants;
+import com.morgan.eshop.cache.base.zookeeper.ZookeeperSession;
 import com.morgan.eshop.cache.entity.ProductInfo;
 import com.morgan.eshop.cache.entity.ShopInfo;
 import com.morgan.eshop.cache.service.CacheService;
+import com.morgan.eshop.cache.utils.Tools;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.annotation.KafkaListener;
@@ -12,6 +15,8 @@ import org.springframework.kafka.support.KafkaHeaders;
 import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Optional;
 
 /**
@@ -57,14 +62,41 @@ public class KafkaConsumer {
         // 取出商品id
         Long productId = messageObject.getLong("productId");
         // 此处一般为查询数据库，但为了简化构造json字符串
-        String productInfoJSON = "{\"id\": 1, \"name\": \"iphone7手机\", \"price\": 5599, \"pictureList\":\"a.jpg,b.jpg\", \"specification\": \"iphone7的规格\", \"service\": \"iphone7的售后服务\", \"color\": \"红色,白色,黑色\", \"size\": \"5.5\", \"shopId\": 1}";
+        String productInfoJSON = "{\"id\": 2, \"name\": \"iphone7手机\", \"price\": 5599, \"pictureList\":\"a.jpg,b.jpg\", \"specification\": \"iphone7的规格\", \"service\": \"iphone7的售后服务\", \"color\": \"红色,白色,黑色\", \"size\": \"5.5\", \"shopId\": 1, \"modifiedTime\": \"2017-01-01 12:00:00\"}";
         ProductInfo productInfo = JSONObject.parseObject(productInfoJSON, ProductInfo.class);
+        // 此处为商品信息变更，涉及分布式缓存重建过程
+        // 获取分布式锁
+        ZookeeperSession zookeeperSession = ZookeeperSession.getInstance();
+        zookeeperSession.acquireDistributedLock(productId);
+        // 获取到锁之后，先去redis中拿，看存在不存在及数据的版本
+        ProductInfo existProductInfo = cacheService.getProductInfoFromRedisCache(productId);
+        if (Tools.isNotEmpty(existProductInfo)){
+            DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern(GlobalConstants.DateTimeFormatter.DEFAULT_DATE_TIME);
+            LocalDateTime modifiedTime = LocalDateTime.parse(productInfo.getModifiedTime());
+            LocalDateTime existModifiedTime = LocalDateTime.parse(existProductInfo.getModifiedTime());
+            if (modifiedTime.isBefore(existModifiedTime)){
+                System.out.println("current date[" + productInfo.getModifiedTime() + "is before existDate[" + existProductInfo.getModifiedTime() + "]");
+                return;
+            }
+            System.out.println("current date[" + productInfo.getModifiedTime() + "is after existDate[" + existProductInfo.getModifiedTime() + "]");
+        }else{
+            System.out.println("exist productInfo is null");
+        }
+        // 睡眠一下，方便测试不同地方尝试重建redis缓存
+        try {
+            Thread.sleep(10 * 1000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        // 走到这里，代表productInfo为最新版本的信息，需要保存到缓存中去
         // 第一步：保存到本地缓存
         cacheService.saveProductInfoLocalCache(productInfo);
         System.out.println("获取刚刚保存到本地缓存的商品信息：" + cacheService.getProductInfoLocalCache(productId));
-        // TODO 分布式缓存重建，防止并发冲突问题，业务逻辑
         // 第二步：保存到redis缓存
         cacheService.saveProductInfoRedisCache(productInfo);
+
+        // 最后释放分布式锁
+        zookeeperSession.releaseDistributedLock(productId);
     }
 
     /**

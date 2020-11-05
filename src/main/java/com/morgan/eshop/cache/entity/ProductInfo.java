@@ -24,6 +24,7 @@ public class ProductInfo {
     private String color;
     private String size;
     private Long shopId;
+    private String modifiedTime;
 
     @Override
     public String toString() {

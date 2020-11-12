@@ -37,7 +37,6 @@ public class KafkaProducer {
         ListenableFuture<SendResult<String, Object>> future = kafkaTemplate.send(TOPIC_TEST, jsonString);
         // 监听消息响应
         future.addCallback(new ListenableFutureCallback<SendResult<String, Object>>() {
-
             /**
              * 发送失败
              * @param throwable

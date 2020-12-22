@@ -1,6 +1,8 @@
 package com.morgan.eshop.cache.base.zookeeper;
 
+import com.morgan.eshop.cache.base.constant.GlobalConstants;
 import org.apache.zookeeper.*;
+import org.apache.zookeeper.data.Stat;
 import org.springframework.beans.factory.annotation.Value;
 
 import java.io.IOException;
@@ -33,10 +35,6 @@ public class ZookeeperSession {
         }
     }
 
-    /**
-     * 获取分布式锁
-     * @param productId
-     */
     public void acquireDistributedLock(Long productId){
         String path = "/product-lock-" + productId;
         try {
@@ -65,10 +63,44 @@ public class ZookeeperSession {
         }
     }
 
-    /**
-     * 释放分布式锁
-     * @param productId
-     */
+    public void acquireDistributedLock(String path){
+        try {
+            zooKeeper.create(path,"".getBytes(), ZooDefs.Ids.OPEN_ACL_UNSAFE, CreateMode.EPHEMERAL);
+            System.out.println("success to acquire lock for " + path);
+        } catch (KeeperException e) {
+            // 如果锁已被获取，会进入这里
+            // a:使用重试机制继续尝试获取锁/b:其他也可以使用监听机制，监听获取锁的节点，如果节点被删除，代表锁已经被释放，再去尝试竞争锁/c:刚开始就创建多个有序临时节点，谁最小谁先获取锁，然后后续的依次监听前一个节点的变化
+            int count = 0;
+            while (true){
+                try {
+                    Thread.sleep(20);
+                    zooKeeper.create(path,"".getBytes(), ZooDefs.Ids.OPEN_ACL_UNSAFE,CreateMode.EPHEMERAL);
+                } catch (InterruptedException ex) {
+                    ex.printStackTrace();
+                } catch (KeeperException ex) {
+                    ex.printStackTrace();
+                    count++;
+                    continue;
+                }
+                System.out.println("success to acquire lock for " + path + " after " + count + "times try....");
+                break;
+            }
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public Boolean acquireFastFailDistributedLock(String path){
+        try {
+            zooKeeper.create(path,"".getBytes(), ZooDefs.Ids.OPEN_ACL_UNSAFE, CreateMode.EPHEMERAL);
+            System.out.println("success to acquire lock for " + path);
+            return true;
+        } catch (InterruptedException | KeeperException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
     public void releaseDistributedLock(Long productId){
         String path = "/product-lock-" + productId;
         try {
@@ -76,6 +108,33 @@ public class ZookeeperSession {
         } catch (InterruptedException e) {
             e.printStackTrace();
         } catch (KeeperException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void releaseDistributedLock(String path){
+        try {
+            zooKeeper.delete(path,-1);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (KeeperException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public String getNodeData(String path){
+        try {
+            return new String(zooKeeper.getData(path,false,new Stat()));
+        } catch (KeeperException | InterruptedException e) {
+            e.printStackTrace();
+        }
+        return GlobalConstants.SpecialChar.BLANK;
+    }
+
+    public void setNodeData(String path,String data){
+        try {
+            zooKeeper.setData(path,data.getBytes(),-1);
+        } catch (KeeperException | InterruptedException e) {
             e.printStackTrace();
         }
     }

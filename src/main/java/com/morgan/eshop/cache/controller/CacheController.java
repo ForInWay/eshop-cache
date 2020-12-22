@@ -3,6 +3,7 @@ package com.morgan.eshop.cache.controller;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.morgan.eshop.cache.base.queue.RebuildCacheQueue;
+import com.morgan.eshop.cache.base.thread.CachePreWarmThread;
 import com.morgan.eshop.cache.entity.ProductInfo;
 import com.morgan.eshop.cache.entity.RequestTest;
 import com.morgan.eshop.cache.entity.ShopInfo;
@@ -109,5 +110,14 @@ public class CacheController {
             log.info("缓存重建，从数据库加载");
         }
         return shopInfo;
+    }
+
+    /**
+     * 缓存预热
+     */
+    @PostMapping("preWarmCache")
+    @ResponseBody
+    public void preWarmCache(){
+        new CachePreWarmThread().start();
     }
 }

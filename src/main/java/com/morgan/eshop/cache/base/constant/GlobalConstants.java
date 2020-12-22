@@ -88,27 +88,16 @@ public interface GlobalConstants {
         Integer NINE = 9;
     }
 
-    /**
-     * 缓存区域设置
-     */
-    interface CacheRegion {
-        // 系统缓存域
-        String SYS_CACHE = "sysCache";
-        // 用户限制代打卡域
-        String USER_CLOCKIN_LIMIT = "userClockinLimit";
-        // 预算控制编辑限制域
-        String PROJECT_BUDGET_EDIT_LIMIT = "projectBudgetEditLimit";
-        // 库存盘点限制域
-        String STOCK_TAKING_LIMIT = "stockTakingLimit";
-        // 月统计-公司级缓存域
-        String COMPANY_STATISTIC_MONTHLY = "companyStatisticMonthly";
-        String ATTENDANCE_EXPORT = "fileCache";
-    }
-
     interface DateTimeFormatter {
         String DEFAULT_DATE_TIME = "yyyy-MM-dd HH:mm:ss";
         String DEFAULT_DATE = "yyyy-MM-dd";
         String DEFAULT_TIME = "HH:mm:ss";
         String YYYYMMDD = "YYYYMMDD";
+    }
+
+    interface SpecialChar{
+        String BLANK = "";
+        String FORWARD_SLASH = "/";
+        String BAR = "-";
     }
 }

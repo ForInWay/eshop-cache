@@ -8,7 +8,7 @@ package com.morgan.eshop.cache.base.constant;
  */
 public interface GlobalConstants {
 
-    public interface TrueFalse {
+    interface TrueFalse {
         /**
          * 真
          */
@@ -24,7 +24,7 @@ public interface GlobalConstants {
      * 
      * 是否
      */
-    public interface YN {
+    interface YN {
         String Y = "Y";
         
         String N = "N";
@@ -33,7 +33,7 @@ public interface GlobalConstants {
     /***
      * 逻辑键 AND OR XOR NOT
      */
-    public interface LOGICKEY {
+    interface LOGICKEY {
         /**
          * 交
          */
@@ -58,7 +58,7 @@ public interface GlobalConstants {
     /***
      * 数字常量
      */
-    public interface NumberString {
+    interface NumberString {
         String ZERO = "0";
         String ONE = "1";
         String TWO = "2";
@@ -75,7 +75,7 @@ public interface GlobalConstants {
     /***
      * 数字常量
      */
-    public interface DIGITAL {
+    interface DIGITAL {
         Integer ZERO = 0;
         Integer ONE = 1;
         Integer TWO = 2;

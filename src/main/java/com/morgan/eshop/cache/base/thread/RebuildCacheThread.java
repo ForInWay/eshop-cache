@@ -20,35 +20,41 @@ public class RebuildCacheThread implements Runnable{
 
     @Override
     public void run() {
+        System.out.println("nginx 线程循环获取");
         RebuildCacheQueue rebuildCacheQueue = RebuildCacheQueue.getInstance();
         ZookeeperSession zookeeperSession = ZookeeperSession.getInstance();
         CacheService cacheService = (CacheService)SpringContext.getApplicationContext().getBean("cacheService");
         while (true){
-            ProductInfo productInfo = rebuildCacheQueue.takeProductInfo();
-            // 获取分布式锁
-            zookeeperSession.acquireDistributedLock(productInfo.getId());
-            // 获取到锁之后，先去redis中拿，看存在不存在及数据的版本
-            ProductInfo existProductInfo = cacheService.getProductInfoFromRedisCache(productInfo.getId());
-            if (Tools.isNotEmpty(existProductInfo)){
-                DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern(GlobalConstants.DateTimeFormatter.DEFAULT_DATE_TIME);
-                LocalDateTime modifiedTime = LocalDateTime.parse(productInfo.getModifiedTime());
-                LocalDateTime existModifiedTime = LocalDateTime.parse(existProductInfo.getModifiedTime());
-                if (modifiedTime.isBefore(existModifiedTime)){
-                    System.out.println("current date[" + productInfo.getModifiedTime() + "is before existDate[" + existProductInfo.getModifiedTime() + "]");
-                    return;
+            if (rebuildCacheQueue.size() > 0){
+                ProductInfo productInfo = rebuildCacheQueue.takeProductInfo();
+                // 获取分布式锁
+                zookeeperSession.acquireDistributedLock(productInfo.getId());
+                System.out.println("nginx 获取锁");
+                // 获取到锁之后，先去redis中拿，看存在不存在及数据的版本
+                ProductInfo existProductInfo = cacheService.getProductInfoFromRedisCache(productInfo.getId());
+                if (Tools.isNotEmpty(existProductInfo)){
+                    DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern(GlobalConstants.DateTimeFormatter.DEFAULT_DATE_TIME);
+                    LocalDateTime modifiedTime = LocalDateTime.parse(productInfo.getModifiedTime(),dateTimeFormatter);
+                    LocalDateTime existModifiedTime = LocalDateTime.parse(existProductInfo.getModifiedTime(),dateTimeFormatter);
+                    if (modifiedTime.isBefore(existModifiedTime)){
+                        System.out.println("nginx current date[" + productInfo.getModifiedTime() + "is before existDate[" + existProductInfo.getModifiedTime() + "]");
+                        zookeeperSession.releaseDistributedLock(productInfo.getId());
+                        return;
+                    }
+                    System.out.println("nginx current date[" + productInfo.getModifiedTime() + "is after existDate[" + existProductInfo.getModifiedTime() + "]");
+                }else{
+                    System.out.println("nginx exist productInfo is null");
                 }
-                System.out.println("current date[" + productInfo.getModifiedTime() + "is after existDate[" + existProductInfo.getModifiedTime() + "]");
-            }else{
-                System.out.println("exist productInfo is null");
+                // 走到这里，代表productInfo为最新版本的信息，需要保存到缓存中去
+                // 第一步：保存到本地缓存
+                cacheService.saveProductInfoLocalCache(productInfo);
+                System.out.println("获取刚刚保存到本地缓存的商品信息：" + cacheService.getProductInfoLocalCache(productInfo.getId()));
+                // 第二步：保存到redis缓存
+                cacheService.saveProductInfoRedisCache(productInfo);
+                // 最后释放分布式锁
+                zookeeperSession.releaseDistributedLock(productInfo.getId());
+                System.out.println("nginx 释放锁");
             }
-            // 走到这里，代表productInfo为最新版本的信息，需要保存到缓存中去
-            // 第一步：保存到本地缓存
-            cacheService.saveProductInfoLocalCache(productInfo);
-            System.out.println("获取刚刚保存到本地缓存的商品信息：" + cacheService.getProductInfoLocalCache(productInfo.getId()));
-            // 第二步：保存到redis缓存
-            cacheService.saveProductInfoRedisCache(productInfo);
-            // 最后释放分布式锁
-            zookeeperSession.releaseDistributedLock(productInfo.getId());
         }
     }
 }

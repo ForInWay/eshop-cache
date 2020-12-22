@@ -8,11 +8,6 @@ import com.morgan.eshop.cache.entity.ShopInfo; /**
  */
 public interface CacheService {
 
-
-    ProductInfo testSaveCache(ProductInfo productInfo);
-
-    ProductInfo testGetCache(Long id);
-
     ProductInfo saveProductInfoLocalCache(ProductInfo productInfo);
 
     void saveProductInfoRedisCache(ProductInfo productInfo);

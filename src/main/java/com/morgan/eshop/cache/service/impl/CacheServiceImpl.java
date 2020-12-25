@@ -16,30 +16,13 @@ import org.springframework.stereotype.Service;
  * @Date:2020/9/6
  * @User:morgan.b.chen
  */
-@Service
+@Service("cacheService")
 public class CacheServiceImpl implements CacheService{
 
     @Autowired
     private RedisTemplate redisTemplate;
 
     private static final String CACHE_NAME = "local";
-
-    @Override
-    @CachePut(value = CACHE_NAME,key = "#productInfo.id")
-    public ProductInfo testSaveCache(ProductInfo productInfo) {
-        return productInfo;
-    }
-
-    @Override
-    @Cacheable(value = CACHE_NAME,key = "#id")
-    public ProductInfo testGetCache(Long id) {
-        System.out.println("缓存获取成功");
-        ProductInfo productInfo = new ProductInfo();
-        productInfo.setId(2L);
-        productInfo.setName("测试");
-        productInfo.setPrice(23.5);
-        return productInfo;
-    }
 
     @Override
     @CachePut(value = CACHE_NAME,key = "'product_info_'+#productInfo.id")

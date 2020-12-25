@@ -31,17 +31,6 @@ public class CacheController {
     @Autowired
     private RedisTemplate redisTemplate;
 
-    @GetMapping("testSaveCache")
-    public String testSaveCache(ProductInfo productInfo){
-        cacheService.testSaveCache(productInfo);
-        return "success";
-    }
-
-    @GetMapping("testGetCache")
-    public ProductInfo testGetCache(Long id){
-        return cacheService.testGetCache(id);
-    }
-
     /**
      * 发送商品变更消息
      * @param requestTest
@@ -68,21 +57,21 @@ public class CacheController {
         String productJson = (String) redisTemplate.opsForValue().get(productKey);
         if (productJson != null && !"".equals(productJson.trim())){
             productInfo = JSON.parseObject(productJson,ProductInfo.class);
-            log.info("从redis中获取商品信息");
+            log.info("nginx 从redis中获取商品信息");
         }
         if (null == productInfo){
             productInfo = cacheService.getProductInfoLocalCache(productId);
-            log.info("从本地缓存中获取商品信息");
+            log.info("nginx 从本地缓存中获取商品信息");
         }
         if (null == productInfo){
             // 重建缓存
             // 直接构造，模拟从数据库中拿取数据
-            String productInfoJSON = "{\"id\": 2, \"name\": \"iphone7手机\", \"price\": 5599, \"pictureList\":\"a.jpg,b.jpg\", \"specification\": \"iphone7的规格\", \"service\": \"iphone7的售后服务\", \"color\": \"红色,白色,黑色\", \"size\": \"5.5\", \"shopId\": 1, \"modifiedTime\": \"2017-01-01 12:00:00\"}";
+            String productInfoJSON = "{\"id\": 11, \"name\": \"iphone7手机\", \"price\": 5599, \"pictureList\":\"a.jpg,b.jpg\", \"specification\": \"iphone7的规格\", \"service\": \"iphone7的售后服务\", \"color\": \"红色,白色,黑色\", \"size\": \"5.5\", \"shopId\": 1, \"modifiedTime\": \"2017-01-01 12:00:00\"}";
             productInfo = JSONObject.parseObject(productInfoJSON,ProductInfo.class);
             // 将数据推送到一个内存队列
             RebuildCacheQueue rebuildCacheQueue = RebuildCacheQueue.getInstance();
             rebuildCacheQueue.putProductInfo(productInfo);
-            log.info("缓存重建，从数据库加载");
+            log.info("nginx 缓存重建，从数据库加载");
         }
         return productInfo;
     }

@@ -30,6 +30,10 @@ public class RebuildCacheQueue {
         return null;
     }
 
+    public int size(){
+        return queue.size();
+    }
+
     private RebuildCacheQueue() {
 
     }

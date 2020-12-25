@@ -67,7 +67,7 @@ spring:
       # earliest ：在偏移量无效的情况下，消费者将从起始位置读取分区的记录
       auto-offset-reset: earliest
       # 是否自动提交偏移量，默认值是true,为了避免出现重复数据和数据丢失，可以把它设置为false,然后手动提交偏移量
-      enable-auto-commit: true
+      enable-auto-commit: false
       # 键的反序列化方式
       key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
       # 值的反序列化方式
@@ -75,7 +75,7 @@ spring:
     listener:
       # 在侦听器容器中运行的线程数。
       concurrency: 5
-      #listner负责ack，每调用一次，就立即commit
+      # listner负责ack，每调用一次，就立即commit
       ack-mode: manual_immediate
       missing-topics-fatal: false
 logging:

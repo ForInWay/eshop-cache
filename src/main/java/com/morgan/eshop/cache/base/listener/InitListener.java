@@ -22,9 +22,7 @@ public class InitListener implements ServletContextListener {
         ServletContext servletContext = sce.getServletContext();
         WebApplicationContext webApplicationContext = WebApplicationContextUtils.getWebApplicationContext(servletContext);
         SpringContext.setApplicationContext(webApplicationContext);
-//        new Thread(new KafkaConsumer("cache-message")).start();
         new Thread(new RebuildCacheThread()).start();
-        ZookeeperSession.init();
     }
 
     @Override

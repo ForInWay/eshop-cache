@@ -95,9 +95,13 @@ public interface GlobalConstants {
         String YYYYMMDD = "YYYYMMDD";
     }
 
-    interface SpecialChar{
+    interface SpecialChar {
         String BLANK = "";
         String FORWARD_SLASH = "/";
         String BAR = "-";
+    }
+
+    interface ZookeeperBasePath {
+        String BASEPATH = "eshop-cache";
     }
 }

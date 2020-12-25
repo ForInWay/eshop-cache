@@ -1,7 +1,7 @@
 package com.morgan.eshop.cache.base.thread;
 
 import com.morgan.eshop.cache.base.constant.GlobalConstants;
-import com.morgan.eshop.cache.base.context.SpringContext;
+import com.morgan.eshop.cache.base.context.SpringContextHolder;
 import com.morgan.eshop.cache.base.queue.RebuildCacheQueue;
 import com.morgan.eshop.cache.base.zookeeper.ZookeeperSession;
 import com.morgan.eshop.cache.entity.ProductInfo;
@@ -22,7 +22,7 @@ public class RebuildCacheThread implements Runnable{
     public void run() {
         RebuildCacheQueue rebuildCacheQueue = RebuildCacheQueue.getInstance();
         ZookeeperSession zookeeperSession = ZookeeperSession.getInstance();
-        CacheService cacheService = (CacheService)SpringContext.getApplicationContext().getBean("cacheService");
+        CacheService cacheService = (CacheService)SpringContextHolder.getBean("cacheService");
         while (true){
             ProductInfo productInfo = rebuildCacheQueue.takeProductInfo();
             // 获取分布式锁

@@ -10,7 +10,7 @@ import java.time.LocalTime;
  * @Author Morgan
  * @Date 2020/11/5 14:52
  **/
-public class DateUtil {
+public class DateUtils {
 
     public static void main(String[] args) {
         Instant instant = Instant.now();

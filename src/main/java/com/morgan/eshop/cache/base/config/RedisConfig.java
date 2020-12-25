@@ -35,10 +35,7 @@ public class RedisConfig {
     @Autowired
     private Environment environment;
 
-    /**
-     * 配置lettuce连接池
-     * @return
-     */
+
     @Bean
     @Primary
     @ConfigurationProperties(prefix = "spring.redis.lettuce.pool")
@@ -46,10 +43,6 @@ public class RedisConfig {
         return new GenericObjectPoolConfig();
     }
 
-    /**
-     * 配置数据源
-     * @return
-     */
     @Bean
     @Primary
     public RedisClusterConfiguration redisClusterConfig(){
@@ -60,10 +53,6 @@ public class RedisConfig {
         return redisClusterConfiguration;
     }
 
-    /**
-     * 配置数据源连接工厂
-     * @return
-     */
     @Bean
     @Primary
     public LettuceConnectionFactory lettuceConnectionFactory(GenericObjectPoolConfig redisPool,
@@ -72,22 +61,12 @@ public class RedisConfig {
         return new LettuceConnectionFactory(redisClusterConfig,clientConfiguration);
     }
 
-    /**
-     * 配置RedisTemplate
-     * @param redisConnectionFactory
-     * @return
-     */
     @Bean
     @Primary
     public RedisTemplate redisTemplate(@Qualifier("lettuceConnectionFactory") RedisConnectionFactory redisConnectionFactory){
         return getRedisTemplate(redisConnectionFactory);
     }
 
-    /**
-     * 获取RedisTemplate
-     * @param redisConnectionFactory
-     * @return
-     */
     private RedisTemplate getRedisTemplate(RedisConnectionFactory redisConnectionFactory) {
         RedisTemplate<String,Object> template = new RedisTemplate<>();
         template.setConnectionFactory(redisConnectionFactory);
